@@ -2,7 +2,7 @@ var inquirer = require("inquirer");
 var mysql = require("mysql");
 var connection;
 
-
+//function that makes the connection
 function makeConnnection() {
     connection = mysql.createConnection({
         host: "localhost",
@@ -14,6 +14,7 @@ function makeConnnection() {
 };
 
 
+//function to prompt the user
 function promptUser() {
 
     inquirer.prompt([
@@ -28,7 +29,9 @@ function promptUser() {
 
     ]).then(function (response) {
 
+        //determine what the user entered and pick a path
         switch (response.action) {
+
 
             case "BUY SOMETHING":
                 inquirer.prompt([
@@ -52,7 +55,7 @@ function promptUser() {
                     },
 
                 ]).then(function (productResponse) {
-
+                    //select the correct function based on whether the user enters an ID or name
                     if (isNaN(productResponse.product)) {
                         buySomethingName(productResponse.product)
                     }
@@ -61,10 +64,14 @@ function promptUser() {
                     }
                 })
                 break;
+
+
             case "SEE A LIST OF PRODUCTS":
+            //show  list of products
                 productList();
                 break;
 
+                //exit
             case "QUIT":
                 cleanUp();
 
@@ -73,9 +80,12 @@ function promptUser() {
 }
 
 
-
+//used if the user enters the name of the product
 function buySomethingName(productName) {
+
+    //set the query string
     var queryString = "SELECT stock, price FROM products WHERE product_name = ?"
+
     connection.query(queryString, productName, function (err, res) {
         if (err) {
             console.log("Item not found.")
